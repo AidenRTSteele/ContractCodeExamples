@@ -1,0 +1,26 @@
+MasterObject = game.Workspace:FindFirstChild("Naval Yard")
+
+Object = game.ServerStorage.Vehicles.Defender.Land:FindFirstChild(script.Parent.VehicleName.Value)
+script.Parent.NameText.Text = script.Parent.VehicleName.Value
+script.Parent.HealthText.Text = tostring("HEALTH: "..script.Parent.Health.Value)
+script.Parent.PriceText.Text = tostring("RESOURCE COST: "..script.Parent.Price.Value)
+
+function OnMouseClick()
+	Player = script.Parent.Parent.Parent.Parent.Parent.Parent
+	print(Player.Name)
+	if MasterObject.DebounceValue.Value == false then
+		PlayerTeam = game.Teams:FindFirstChild(Player.Team.Name)
+		print(PlayerTeam.Name)
+		if PlayerTeam.Resources.Value >= script.Parent.Price.Value then
+			PlayerTeam.Resources.Value -= script.Parent.Price.Value
+			Vehicle = game.ServerStorage.Vehicles.Defender.Water:FindFirstChild(script.Parent.VehicleName.Value)
+			Clone = Vehicle:Clone()
+			Clone:PivotTo(MasterObject.SpawnPoint:GetPivot())
+			Clone.Parent = game.Workspace
+			MasterObject.Script.Trigger:Fire()
+			print("Fired trigger!") 
+		end
+	end
+end
+
+script.Parent.Buy.MouseButton1Click:Connect(OnMouseClick)
