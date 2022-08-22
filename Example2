@@ -1,0 +1,32 @@
+Debounce = false
+ChildParts = script.Parent.DoorParts:GetChildren()
+function PromptActivated()
+	if Debounce == false then
+		script.Parent.InteractionParts.PartOne.ProximityPrompt.Enabled = false
+		script.Parent.InteractionParts.PartTwo.ProximityPrompt.Enabled = false
+		Debounce = true
+		for Index, Child in pairs(ChildParts) do
+			Child.Transparency = 1
+			Child.CanCollide = false
+		end
+
+		script.Parent.DoorParts.Sign.GuiLeft.Enabled = false
+		script.Parent.DoorParts.Sign.GuiRight.Enabled = false
+
+		wait(3)
+
+		for Index, Child in pairs(ChildParts) do
+			Child.Transparency = 0
+			Child.CanCollide = true
+		end
+
+		script.Parent.DoorParts.Sign.GuiLeft.Enabled = true
+		script.Parent.DoorParts.Sign.GuiRight.Enabled = true
+		Debounce = false
+		script.Parent.InteractionParts.PartOne.ProximityPrompt.Enabled = true
+		script.Parent.InteractionParts.PartTwo.ProximityPrompt.Enabled = true
+	end
+end
+
+script.Parent.InteractionParts.PartOne.ProximityPrompt.Triggered:Connect(PromptActivated)
+script.Parent.InteractionParts.PartTwo.ProximityPrompt.Triggered:Connect(PromptActivated)
