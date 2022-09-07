@@ -1,0 +1,25 @@
+function WarningTriggered(Player)
+	print("GameMaster Reports: Warning triggered for", Player)
+	Grace = Player.Character:WaitForChild("Grace")
+	Grace.Value -= 1
+	game.ReplicatedStorage.GuiReplicationEvents.WarningTrigger:FireClient(Player, true, "YOU WILL BE PUNISHED IF YOU KILL THIS MANY MORE INNOCENTS:", Grace)
+end
+
+function KillOnSightTriggered(Player, KoSReason)
+	print("GameMaster Reports: KillOnSight triggered for player", Player, "for reason", KoSReason)
+	ServerGrace = Player:WaitForChild("ServerGrace")
+	KillOnSight = Player.Character:WaitForChild("KillOnSight")
+	OverheadRankGui = Player.Character.Head:WaitForChild("OverheadRankGui")
+	if ServerGrace.Value > 0 then
+		ServerGrace.Value -= 1
+	end
+	KillOnSight.Value = true
+	for Index, Child in pairs(OverheadRankGui.Frame:GetChildren()) do
+		Child.Visible = false
+	end
+	OverheadRankGui.Frame.KoS.Visible = true
+	game.ReplicatedStorage.GuiReplicationEvents.PunishmentTrigger:FireClient(Player, KoSReason, "KoS")
+end
+
+
+script.KillOnSightBindable.Event:Connect(KillOnSightTriggered)
