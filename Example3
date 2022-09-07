@@ -1,0 +1,74 @@
+print("\n GameMaster Kill Handler",script.Parent.About.Version.Value,"\n ##################### \n MADE BY MORKAVOW MANUFACTURING \n ALL RIGHTS RESERVED 2022")
+
+ExperienceBonus = script.KillValues.Experience
+CreditBonus = script.KillValues.CreditBonus
+
+function DefaultKillAdder(Player, Victim)
+	local Kills = Player:WaitForChild("Kills")
+	local CrimeExp = Player:WaitForChild("CrimeExp")
+	local Tender = Player:WaitForChild("Credits")
+	print("DefaultKillHandler Debug 1")
+	Kills.Value += 1
+	CrimeExp.Value += ExperienceBonus.Value
+	Tender.Value += CreditBonus.Value
+	print("DefaultKillHandler Debug 2")
+	print(Player.Name, Kills.Value)
+	game.ReplicatedStorage.GuiReplicationEvents.GuiFeedTrigger:FireClient(Player, "Killed", Victim, 15, "Criminal Experience", 50)
+end
+
+function GovernmentKillAdder(Player, Victim)
+	local Kills = Player:WaitForChild("Kills")
+	local LegalExp = Player:WaitForChild("LegalExp")
+	local Tender = Player:WaitForChild("Credits")
+	print("DefaultKillHandler Debug 1")
+	Kills.Value += 1
+	LegalExp.Value += ExperienceBonus.Value
+	Tender.Value += CreditBonus.Value
+	print("DefaultKillHandler Debug 2")
+	print(Player.Name, Kills.Value)
+	game.ReplicatedStorage.GuiReplicationEvents.GuiFeedTrigger:FireClient(Player, "Killed", Victim, 15, "C.A.R.E.E.R Experience", 50)
+end
+
+function InnocentKill(Player, Victim)
+	Grace = Player.Character:FindFirstChild("Grace")
+	if Grace.Value > 0 then
+		Grace.Value -= 1
+	end
+	if Grace.Value == 0 then
+		script.Parent.PunishmentHandler.KillOnSightBindable:Fire(Player, "Killed innocents")
+	end
+	game.ReplicatedStorage.GuiReplicationEvents.GuiFeedTrigger:FireClient(Player, "Killed innocent", Victim, 0, "Experience", 0)
+end
+
+function TeamKill(Player)
+	print("GameMaster reports:", Player, "Teamkilled. Kill on Sight enabled.")
+	script.Parent.PunishmentHandler.KillOnSightBindable:Fire(Player, "Teamkilling")
+end
+
+function KillHandler(Player, Victim)
+	if Victim ~= nil then
+		print("GameMaster reports:", Player, "killed", Victim.Name..".")
+		if Player.TeamColor == BrickColor.new("Really red") then
+			VictimKoS = Victim.Character:FindFirstChild("KillOnSight")
+			GuiltyKill = false
+			if Victim.TeamColor == BrickColor.new("Really red") and VictimKoS.Value == false then
+				TeamKill(Player)
+				GuiltyKill = true
+			end
+			if VictimKoS.Value == false then
+				InnocentKill(Player, Victim)
+				GuiltyKill = true
+			end
+			if GuiltyKill == false then
+				GovernmentKillAdder(Player, Victim)
+			end
+		else
+			DefaultKillAdder(Player,Victim)
+		end
+	else
+		print("GameMaster reports:", Player, "killed NPC.")
+		DefaultKillAdder(Player, "NPC")
+	end
+end
+
+game.Workspace.GameMasterEvents.OnKillEvent.Event:Connect(KillHandler)
