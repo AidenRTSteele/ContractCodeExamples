@@ -1,0 +1,59 @@
+local datastore = game:GetService("DataStoreService")
+local ds1 = datastore:GetDataStore("TenderSaveSystem")
+local ds2 = datastore:GetDataStore("LegalJobLevel")
+local ds3 = datastore:GetDataStore("LegalJobExp")
+local ds4 = datastore:GetDataStore("IllegalJobLevel")
+local ds5 = datastore:GetDataStore("IllegalJobExp")
+
+
+function OnEvent(Player)
+	print("GameMaster", script.Parent.About.Version.Value, "\n ##################### \n LEVEL HANDLER \n MADE BY MORKAVOW MANUFACTURING")
+	print("Level Handler module activated for", Player.Name)
+	
+	local CrimeLevel = Player:WaitForChild("CrimeLevel")
+	local CrimeExperience = Player:WaitForChild("CrimeExp")
+	
+	---
+	
+	local LegalLevel = Player:WaitForChild("LegalLevel")
+	local LegalExperience = Player:WaitForChild("LegalExp")
+	
+	---
+	LegalLevelUpThreshold = LegalLevel.Value * 125
+	CrimeLevelUpThreshold = CrimeLevel.Value * 125
+	---
+	
+	CrimeExperience.Changed:Connect(function()
+		print("\n GameMaster LevelHandler reports:", Player.Name, "crime experience changed. \n New experience:", CrimeExperience.Value)
+		if CrimeExperience.Value >= CrimeLevelUpThreshold then
+			CrimeLevel.Value += 1
+			CrimeExperience.Value = 0
+		end
+	end)
+	
+	CrimeLevel.Changed:Connect(function()
+		print("GameMaster LevelHandler reports:", Player.Name, "crime level changed. \n New level:", CrimeLevel.Value)
+		NotificationText = ("Criminal trust level up! Your level is now: "..CrimeLevel.Value)
+		game.ReplicatedStorage.GuiReplicationEvents.NotificationTrigger:FireClient(Player, NotificationText, "LevelUp")
+		CrimeLevelUpThreshold = CrimeLevel.Value * 125
+	end)
+	
+	---
+	
+	LegalExperience.Changed:Connect(function()
+		print("\n GameMaster LevelHandler reports:", Player.Name, "legal experience changed. \n New experience:", LegalExperience.Value)
+		if CrimeExperience.Value >= CrimeLevelUpThreshold then
+			LegalLevel.Value += 1
+			LegalExperience.Value = 0
+		end
+	end)
+	
+	LegalLevel.Changed:Connect(function()
+		print("GameMaster LevelHandler reports:", Player.Name, "legal level changed. \n New level:", LegalLevel.Value)
+		NotificationText = ("C.A.R.E.E.R system level up! Your C.A.R.E.E.R level is now: "..LegalLevel.Value)
+		game.ReplicatedStorage.GuiReplicationEvents.NotificationTrigger:FireClient(Player, NotificationText, "LevelUp")
+		LegalLevelUpThreshold = LegalLevel.Value * 125
+	end)
+end
+
+script.NewPlayerBindable.Event:Connect(OnEvent)
